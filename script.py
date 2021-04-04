@@ -10,10 +10,10 @@ from sklearn.decomposition import PCA
 import random
 
 # number of tracks from each user
-NUM_SONGS_FROM_USERS = 5
+NUM_SONGS_FROM_USERS = 2
 NUM_CLUSTERS = 2
 TARGET_CLUSTER_SONGS = 5
-NUM_TOP_ARTISTS = 3
+NUM_TOP_ARTISTS = 1
 SONGS_FROM_TOP_ARTIST = 2
     
 def get_df(tracks):
@@ -178,11 +178,21 @@ def get_shared_playlist(name1, name2):
     recommendations_converted = [item for elem in no_integers for item in elem]
     recommendations_converted.extend(artist_songs)
 
-    return random.shuffle(recommendations_converted), False
+    random.shuffle(recommendations_converted)
+    playlist = []
+    for song_id in recommendations_converted:
+        track = spotify.info_from_id(song_id)
+        album_name = track['album']['name']
+        album_img = track['album']['images'][-1]['url']
+        artist_name = track['artists'][0]['name']
+        song_name = track['name']
+        duration = track['duration_ms']
+        playlist.append([song_name, artist_name, album_name, album_img, duration])
+    return playlist, False
 
 # for testing purposes
 if __name__  == "__main__":
     # name1 = input("User 1's last.fm username: ")
     # name2 = input("User 2's last.fm username: ")
     # print(get_shared_playlist(name1, name2))
-    print(get_shared_playlist('hamrobe', 'lynmarie44'))
+    print(get_shared_playlist('hamrobe', 'didntask'))

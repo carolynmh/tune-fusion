@@ -22,7 +22,7 @@ def data():
     print(msg)
   else:
     # msg is a playlist
-    return render_template("playlist.html", playlist=msg[0], name=msg[1])  
+    return render_template("playlist_v2.html", playlist=msg[0], name=msg[1])  
   return redirect("/")
 
 if __name__ == "__main__":

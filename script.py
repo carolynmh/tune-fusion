@@ -82,9 +82,8 @@ def get_shared_playlist(name1, name2):
     scaler = MinMaxScaler()
     scaler.fit(dfs[columns])
     dfs[columns] = scaler.transform(dfs[columns])
-    print(dfs.head())
 
-    clusters = 2
+    clusters = 10
     kmeans = KMeans(n_clusters=clusters)
     kmeans.fit(dfs)
     pca = PCA(3) 
@@ -147,7 +146,7 @@ def get_shared_playlist(name1, name2):
 
     return list_of_recommendations_converted
 
-
+# for testing purposes
 if __name__  == "__main__":
     name1 = input("User 1's last.fm username: ")
     name2 = input("User 2's last.fm username: ")

@@ -17,7 +17,7 @@ def data():
   username1 = request.form['username1']
   username2 = request.form['username2']
   msg, rc = playlist_builder.create_joint_playlist(
-        username1, username2, "")
+        [username1, username2], "")
   if rc:
     print(msg)
   else:

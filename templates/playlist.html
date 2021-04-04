@@ -19,7 +19,7 @@
     <th>release</th>
     <th>duration</th>
   </tr>
-    {% for song_name, artist_name, album_name, album_img, duration in playlist %}
+    {% for song_name, artist_name, album_name, album_img, duration, _ in playlist %}
   <tr>
     <td class='im img-fluid'><img src='{{album_img}}' style="width:100%"></td>
     <td>{{song_name}}</td>

@@ -176,7 +176,7 @@ def get_shared_playlist(names):
     for song_id in recommendations_converted:
         track = spotify.info_from_id(song_id)
         album_name = track['album']['name']
-        album_img = track['album']['images'][-1]['url']
+        album_img = track['album']['images'][0]['url']
         artist_name = track['artists'][0]['name']
         song_name = track['name']
         duration = track['duration_ms']

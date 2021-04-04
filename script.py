@@ -10,8 +10,11 @@ from sklearn.decomposition import PCA
 import random
 
 # number of tracks from each user
-NUM_SONGS_FROM_USERS = 50
-NUM_CLUSTERS = 20
+NUM_SONGS_FROM_USERS = 5
+NUM_CLUSTERS = 2
+TARGET_CLUSTER_SONGS = 5
+NUM_TOP_ARTISTS = 3
+SONGS_FROM_TOP_ARTIST = 2
     
 def get_df(tracks):
     weights = []
@@ -65,7 +68,7 @@ def get_list_of_recs(dfs, all_songs):
     scaler = StandardScaler()
     scaler.fit(dfs[['weight']])
     dfs[['weight']] = scaler.transform(dfs[['weight']])
-    dfs[['weight']] -= np.min(dfs[['weight']]) - 0.4
+    dfs[['weight']] -= np.min(dfs[['weight']]) - 1.0
 
     kmeans = KMeans(n_clusters=NUM_CLUSTERS)
     kmeans.fit(dfs)
@@ -148,11 +151,24 @@ def get_shared_playlist(name1, name2):
     all_songs.reset_index(drop=True, inplace=True)
 
     dfs = spotify.add_features(df1, df2)
-    # all_songs['id'] = dfs.loc['id']
     
     recs = get_list_of_recs(dfs, all_songs)
 
-    recommendations, num_recs = spotify.get_recs(recs, 30)
+    recommendations, num_recs = spotify.get_recs(recs, TARGET_CLUSTER_SONGS)
+
+    # add songs from both listeners' top artists
+    top_artists1 = usr1.get_top_artists(limit=NUM_TOP_ARTISTS)
+    top_artists2 = usr2.get_top_artists(limit=NUM_TOP_ARTISTS)
+    artist_songs1 = [random.sample(artist.item.get_top_tracks(), SONGS_FROM_TOP_ARTIST) for artist in top_artists1]
+    artist_songs2 = [random.sample(artist.item.get_top_tracks(), SONGS_FROM_TOP_ARTIST) for artist in top_artists2]
+    artist_songs1.extend(artist_songs2)
+    artist_songs = []
+    for artist in artist_songs1:
+        for song in artist:
+            song_id = spotify.get_song_id(song.item.artist.name, song.item.title)
+            if len(song_id) > 0:
+                artist_songs.append(song_id)
+
     recommendations_converted = [
         pd.json_normalize(rec, record_path='tracks').id.tolist()
         for rec in recommendations
@@ -160,11 +176,13 @@ def get_shared_playlist(name1, name2):
 
     no_integers = [x for x in recommendations_converted if not isinstance(x, int)]
     recommendations_converted = [item for elem in no_integers for item in elem]
+    recommendations_converted.extend(artist_songs)
 
-    return recommendations_converted, False
+    return random.shuffle(recommendations_converted), False
 
 # for testing purposes
 if __name__  == "__main__":
-    name1 = input("User 1's last.fm username: ")
-    name2 = input("User 2's last.fm username: ")
-    print(get_shared_playlist(name1, name2))
+    # name1 = input("User 1's last.fm username: ")
+    # name2 = input("User 2's last.fm username: ")
+    # print(get_shared_playlist(name1, name2))
+    print(get_shared_playlist('hamrobe', 'lynmarie44'))

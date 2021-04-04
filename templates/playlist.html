@@ -6,10 +6,12 @@
 
 {% block content %}
 <div class = "container text-center">
-  <div class = "row justify-content-center">
-    <h2>{{name}}</h2>
+  <div class = "row">
+    <div class = "col py-4">
+      <p style = "font-size:24px">{{name}}</p>
+    </div>
   </div>
-  <table style="width:100%" id="playlist">
+  <table id="playlist">
   <tr>
     <th></th>
     <th>title</th>
@@ -19,7 +21,7 @@
   </tr>
     {% for song_name, artist_name, album_name, album_img, duration in playlist %}
   <tr>
-    <td class='im'><img src='{{album_img}}' width=30px height=30px></td>
+    <td class='im img-fluid'><img src='{{album_img}}' style="width:100%"></td>
     <td>{{song_name}}</td>
     <td>{{artist_name}}</td>
     <td>{{album_name}}</td>

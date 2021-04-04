@@ -11,19 +11,20 @@
     <!-- Other stylesheets -->
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
-
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Alegreya+Sans+SC:wght@700&display=swap" rel="stylesheet">
 
     <title>{{page_title}}</title>
+
   </head>
 
   <style type="text/css">
     body { background: black !important; }
     .form-control:focus{color: #f74fa3; border-color: #f74fa3;  box-shadow: none; -webkit-box-shadow: none;}
     #playlist {
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: 'Alegreya Sans SC', sans-serif !important;
     font-size: 12pt;
     border-collapse: collapse;
     width: 100%;
@@ -46,6 +47,14 @@
   #playlist .im {
       align-self: center;
   }
+
+  .fade {
+    opacity: 0.6;
+    transition: 0.3s;
+    filter: grayscale(50%)
+  }
+  .fade:hover {opacity: 1; filter: grayscale(0%)}
+
   </style>
 
   <body>

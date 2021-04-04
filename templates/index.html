@@ -1,0 +1,49 @@
+{% extends "base.html"%}
+
+{% block image %}
+<div class = "container-fluid">
+  <img src="/static/tune_fusion.png" class = "img-fluid mx-auto d-block w-100"></img>
+</div>
+{% endblock %}
+
+{% block content %}
+<style>
+  .user_tag {
+    color: #f74fa3
+  }
+  .fade {
+    opacity: 0.6;
+    transition: 0.3s;
+    filter: grayscale(50%)
+  }
+  .fade:hover {opacity: 1; filter: grayscale(0%)}
+</style>
+<div class = "container text-center">
+  <div class = "row">
+    <div class = "col py-2">
+      <p >
+      welcome
+      </p>
+      <p>
+      should you choose to enter, this web app will extract data from the last.fm accounts of <span class = "user_tag">user 1</span> and <span class = "user_tag">user 2</span> to construct a spotify playlist fusing respective users’ overlapping music interests
+      </p>
+    </div>
+  </div>
+  <div class = "row justify-content-center">
+    <div class = "col-3 py-4">
+      <div class = "fade">
+      <a href = "https://www.youtube.com/watch?v=dQw4w9WgXcQ" target = "_blank"> 
+        <img src="/static/exit.png" class = "img-fluid"></img>
+      </a>
+      </div>
+    </div>
+    <div class = "col-3 py-4">
+      <div class = "fade">
+      <a href = "/form">
+        <img src="/static/enter-inv.png" class= "img-fluid"></img>
+      </a>
+      </div>
+    </div>
+  </div>       
+</div>
+{% endblock %}

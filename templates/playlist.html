@@ -17,7 +17,7 @@
     <th>release</th>
     <th>duration</th>
   </tr>
-    {% for song_name, artist_name, album_name, album_img, duration in playlist %}
+    {% for song_name, artist_name, album_name, album_img, duration, _ in playlist %}
   <tr>
     <td class='im'><img src='{{album_img}}' width=30px height=30px></td>
     <td>{{song_name}}</td>

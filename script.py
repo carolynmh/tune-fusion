@@ -120,50 +120,43 @@ def get_list_of_recs(dfs, all_songs):
     return [(recs[i], rec_weights[i]) for i in range(len(recs))]
 
 
-def get_shared_playlist(name1, name2):
-    network = lastfm.get_network(name1)
+def get_shared_playlist(names):
+    network = lastfm.get_network(names[0])
     # use network to retrive User objects
-    usr1 = network.get_user(name1)
-    usr2 = network.get_user(name2)
+    usrs = [network.get_user(name) for name in names]
 
     # collect the top tracks form 
-    tracks1 = []
-    tracks2 = []
-    try:
-        tracks1 = usr1.get_top_tracks(limit = NUM_SONGS_FROM_USERS, period=pylast.PERIOD_OVERALL)
-    except:
-        tracks1 = []
-    if not tracks1:
-        return f"Error: Could not find user \"{name1}\" in last.fm", True
-    try:
-        tracks2 = usr2.get_top_tracks(limit = NUM_SONGS_FROM_USERS, period=pylast.PERIOD_OVERALL)
-    except:
-        tracks2 = []
-    if not tracks2:
-        return f"Error: Could not find user \"{name2}\" in last.fm", True
+    usr_dfs = []
+    for usr, name in zip(usrs, names):
+        try:
+            tracks1 = usr.get_top_tracks(limit = NUM_SONGS_FROM_USERS, period=pylast.PERIOD_OVERALL)
+        except:
+            tracks1 = []
+        if not tracks1:
+            return f"Error: Could not find user \"{name}\" in last.fm", True
+        df1 = get_df(tracks1)
+
+        # normalize weights to an average of 1
+        df1.weight *= 1 / np.mean(df1.weight)
+        usr_dfs.append(df1)
     
-    df1 = get_df(tracks1)
-    df2 = get_df(tracks2)
-    # normalize weights to an average of 1
-    df1.weight *= 1 / np.mean(df1.weight)
-    df2.weight *= 1 / np.mean(df2.weight)
-    all_songs = pd.concat([df1, df2])
+    all_songs = pd.concat(usr_dfs)
     all_songs.reset_index(drop=True, inplace=True)
 
-    dfs = spotify.add_features(df1, df2)
+    dfs = spotify.add_features(usr_dfs)
     
     recs = get_list_of_recs(dfs, all_songs)
 
     recommendations, num_recs = spotify.get_recs(recs, TARGET_CLUSTER_SONGS)
 
     # add songs from both listeners' top artists
-    top_artists1 = usr1.get_top_artists(limit=NUM_TOP_ARTISTS)
-    top_artists2 = usr2.get_top_artists(limit=NUM_TOP_ARTISTS)
-    artist_songs1 = [random.sample(artist.item.get_top_tracks(), SONGS_FROM_TOP_ARTIST) for artist in top_artists1]
-    artist_songs2 = [random.sample(artist.item.get_top_tracks(), SONGS_FROM_TOP_ARTIST) for artist in top_artists2]
-    artist_songs1.extend(artist_songs2)
+    artist_song_lastfm = []
+    for usr in usrs:
+        top_artists1 = usr.get_top_artists(limit=NUM_TOP_ARTISTS)
+        artist_songs1 = [random.sample(artist.item.get_top_tracks(), SONGS_FROM_TOP_ARTIST) for artist in top_artists1]
+        artist_song_lastfm.extend(artist_songs1)
     artist_songs = []
-    for artist in artist_songs1:
+    for artist in artist_song_lastfm:
         for song in artist:
             song_id = spotify.get_song_id(song.item.artist.name, song.item.title)
             if len(song_id) > 0:
@@ -187,7 +180,7 @@ def get_shared_playlist(name1, name2):
         artist_name = track['artists'][0]['name']
         song_name = track['name']
         duration = track['duration_ms']
-        playlist.append([song_name, artist_name, album_name, album_img, duration])
+        playlist.append([song_name, artist_name, album_name, album_img, duration, song_id])
     return playlist, False
 
 # for testing purposes
@@ -195,4 +188,4 @@ if __name__  == "__main__":
     # name1 = input("User 1's last.fm username: ")
     # name2 = input("User 2's last.fm username: ")
     # print(get_shared_playlist(name1, name2))
-    print(get_shared_playlist('hamrobe', 'didntask'))
+    print(get_shared_playlist(['hamrobe', 'didntask', 'lynmarie44']))
